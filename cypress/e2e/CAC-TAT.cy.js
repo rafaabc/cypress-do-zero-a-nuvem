@@ -8,14 +8,18 @@ describe("Central de Atendimento ao Cliente TAT", () => {
 
   //Custom Commands with no arguments
   it("Preenche os campos obrigatórios e envia o formulário com comandos customizados #1", () => {
+    cy.clock();
     cy.fillMandatoryFieldsAndSubmit();
     cy.get(".success > strong").as("successMessage");
 
     cy.get("@successMessage").should("be.visible");
+    cy.tick(3000);
+    cy.get("@successMessage").should("not.be.visible");
   });
 
   //Custom Commands with arguments
   it("Preenche os campos obrigatórios e envia o formulário com comandos customizados #2", () => {
+    cy.clock();
     cy.fillMandatoryFieldsAndSubmitWithArgs(
       "Rafael",
       "Costa",
@@ -25,18 +29,24 @@ describe("Central de Atendimento ao Cliente TAT", () => {
     cy.get(".success > strong").as("successMessage");
 
     cy.get("@successMessage").should("be.visible");
+    cy.tick(3000);
+    cy.get("@successMessage").should("not.be.visible");
   });
 
   // Custom Commands with arguments as object and default values
   it("Preenche os campos obrigatórios e envia o formulário com comandos customizados #3", () => {
+    cy.clock();
     cy.fillMandatoryFieldsAndSubmitWithArgsAsObjectAndDefaultValues({});
     cy.get(".success > strong").as("successMessage");
 
     cy.get("@successMessage").should("be.visible");
+    cy.tick(3000);
+    cy.get("@successMessage").should("not.be.visible");
   });
 
   // Custom Commands with arguments as object
   it("Preenche os campos obrigatórios e envia o formulário com comandos customizados #4", () => {
+    cy.clock();
     cy.fillMandatoryFieldsAndSubmitWithArgsAsObject({
       firstName: "Rafael",
       lastName: "Costa",
@@ -46,9 +56,12 @@ describe("Central de Atendimento ao Cliente TAT", () => {
     cy.get(".success > strong").as("successMessage");
 
     cy.get("@successMessage").should("be.visible");
+    cy.tick(3000);
+    cy.get("@successMessage").should("not.be.visible");
   });
 
   it("Exibe mensagem de erro ao submeter o formulário com um email com formatação inválida", () => {
+    cy.clock();
     cy.get("#firstName").should("be.visible").type("Rafael");
     cy.get("#lastName").should("be.visible").type("Costa");
     cy.get("#email").should("be.visible").type("rafael");
@@ -59,13 +72,18 @@ describe("Central de Atendimento ao Cliente TAT", () => {
     cy.get(".error").as("errorMessage");
 
     cy.get("@errorMessage").should("be.visible");
+    cy.tick(3000);
+    cy.get("@errorMessage").should("not.be.visible");
   });
 
-  it("Exibe o campo telefone vazio ao digitar um valor não-numérico ", () => {
-    cy.get("#phone").type("a").should("have.value", "");
+  Cypress._.times(3, () => {
+    it("Exibe o campo telefone vazio ao digitar um valor não-numérico ", () => {
+      cy.get("#phone").type("a").should("have.value", "");
+    });
   });
 
   it("Exibe mensagem de erro quando o telefone se torna obrigatório mas não é preenchido antes do envio do formulário", () => {
+    cy.clock();
     cy.get("#firstName").should("be.visible").type("Rafael");
     cy.get("#lastName").should("be.visible").type("Costa");
     cy.get("#email").should("be.visible").type("rafael@example.com");
@@ -74,6 +92,8 @@ describe("Central de Atendimento ao Cliente TAT", () => {
     cy.get(".error").as("errorMessage");
 
     cy.get("@errorMessage").should("be.visible");
+    cy.tick(3000);
+    cy.get("@errorMessage").should("not.be.visible");
   });
 
   it("Preenche e limpa os campos nome, sobrenome, email e telefone", () => {
@@ -102,10 +122,13 @@ describe("Central de Atendimento ao Cliente TAT", () => {
   });
 
   it("Exibe mensagem de erro ao submeter o formulário sem preencher os campos obrigatórios", () => {
+    cy.clock();
     cy.contains("button", "Enviar").should("be.visible").click();
     cy.get(".error").as("errorMessage");
 
     cy.get("@errorMessage").should("be.visible");
+    cy.tick(3000);
+    cy.get("@errorMessage").should("not.be.visible");
   });
 
   it("Seleciona um produto (YouTube) por seu texto", () => {
@@ -186,5 +209,38 @@ describe("Central de Atendimento ao Cliente TAT", () => {
       "be.eq",
       "Central de Atendimento ao Cliente TAT - Política de Privacidade"
     );
+  });
+
+  it("exibe e oculta as mensagens de sucesso e erro usando .invoke()", () => {
+    cy.get(".success")
+      .should("not.be.visible")
+      .invoke("show")
+      .should("be.visible")
+      .and("contain", "Mensagem enviada com sucesso.")
+      .invoke("hide")
+      .should("not.be.visible");
+    cy.get(".error")
+      .should("not.be.visible")
+      .invoke("show")
+      .should("be.visible")
+      .and("contain", "Valide os campos obrigatórios!")
+      .invoke("hide")
+      .should("not.be.visible");
+  });
+
+  it("Preenche o campo da área de texto usando o comando invoke", () => {
+    cy.get("#open-text-area")
+      .invoke("val", "um texto qualquer")
+      .should("have.value", "um texto qualquer");
+  });
+
+  it("Faz uma requisição HTTP", () => {
+    cy.request("https://cac-tat-v3.s3.eu-central-1.amazonaws.com/index.html")
+      .as("getRequest")
+      .its("status")
+      .should("be.equal", 200);
+
+    cy.get("@getRequest").its("statusText").should("be.equal", "OK");
+    cy.get("@getRequest").its("body").should("include", "CAC TAT");
   });
 });
