@@ -243,4 +243,9 @@ describe("Central de Atendimento ao Cliente TAT", () => {
     cy.get("@getRequest").its("statusText").should("be.equal", "OK");
     cy.get("@getRequest").its("body").should("include", "CAC TAT");
   });
+
+  it("Encontra o gato escondido", () => {
+    cy.get("#cat").invoke("show").as("cat");
+    cy.get("@cat").should("be.visible");
+  });
 });

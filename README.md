@@ -1,5 +1,7 @@
 # 🌲 Cypress, from Zero to the Cloud ☁️
 
+[![cypress-do-zero-a-nuvem](https://img.shields.io/endpoint?url=https://cloud.cypress.io/badge/simple/vzarda&style=flat&logo=cypress)](https://cloud.cypress.io/projects/vzarda/runs)
+
 Sample project for the "Cypress, from Zero to the Cloud" course of the Talking About Testing online school.
 
 ## Pre-requirements
